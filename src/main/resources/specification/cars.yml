@@ -1,0 +1,228 @@
+openapi: 3.0.3
+info: 
+  title: CarsAPI 
+  description: This API allows to store and manage cars, search for specific cars, add multimedia, quering etc.
+ 
+  contact: 
+    email: tanyakorsun0208@gmail.com
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080/api/v1
+tags:
+ - name: Cars
+   description: Operations related to cars
+   
+paths:
+  /cars:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Cars
+      description: Get all cars
+      operationId: getCars
+      responses:
+        '200':
+          $ref: "#/components/responses/Cars"
+        '400':
+          description: Invalid request
+    post:
+      security:
+        - BearerAuth: []
+      tags:
+        - Cars
+      description: Create new car.
+      operationId: createCar
+      requestBody: 
+        $ref: "#/components/requestBodies/Car"
+      responses:
+        '201': 
+           $ref: "#/components/responses/Car"
+        '422':
+          description: Validation Exception
+        '401':
+          description: Invalid request
+  /cars/{id}:
+    get:
+      security:
+        - BearerAuth: []
+      tags:
+        - Cars
+      description: Get car by id.
+      operationId: getCar
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/Car'
+        '400':
+          description: Invalid request
+    put:
+      security:
+        - BearerAuth: []
+      tags: 
+        - Cars
+      description: Full update car by id.
+      operationId: updateCar
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        $ref: "#/components/requestBodies/Car"
+      responses:
+        '200':
+          $ref: "#/components/responses/Car"
+    patch:
+      security:
+        - BearerAuth: []
+      tags:
+        - Cars
+      description: Partial update car by id.
+      operationId: updatePartially
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        $ref: "#/components/requestBodies/Car"
+      responses:
+        '200':
+          $ref: "#/components/responses/Car"
+    delete:
+      security:
+        - BearerAuth: []
+      tags:
+        - Cars
+      description: Delete car by id.
+      operationId: deleteCar
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses: 
+        '204':
+          description: Successfully processed the request
+  /cars/{id}/photo:
+    put:
+      security:
+        - BearerAuth: []
+      tags:
+        - Cars
+      description: Add photo to car
+      operationId: uploadPhoto
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          $ref: "#/components/responses/Car"
+
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Car:
+      type: object
+      properties:
+        id:
+          type: integer
+          title: ID
+          readOnly: true
+        brand:
+          type: string
+          title: Brand
+          pattern: ^[a-zA-Zа-яА-яёЁіІїЇєЄҐґ]{1,20}$
+          maxLength: 20
+          minLength: 1
+
+        year:
+          type: integer
+          format: int64
+          title: Year
+          minimum: 1990
+          maximum: 2024
+
+        price:
+          type: number
+          format: double
+          title: Price
+          minimum: 0
+          maximum: 1000000
+
+        photoName:
+          type: string
+
+
+  requestBodies:
+    Car:
+      description: Car to be created
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Car"
+#    Photo:
+#      description: Add Photo
+#      required: true
+#      content:
+#        application/x-www-form-urlencoded:
+#          schema:
+#            type: object
+#            properties:
+#              photo:
+#                type: string
+#                format: formData
+#              id:
+#                type: string
+#            required:
+#              - photo
+#              - id
+  responses:
+    Cars:
+      description: Cars
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Car"
+
+    Car:
+      description: Car
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Car"
+          
+        
+        
+        
+        
+          
